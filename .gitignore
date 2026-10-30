@@ -1,0 +1,24 @@
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# External MPQUIC repository
+mp-quic-go/
+
+# Dataset files
+data/raw/
+data/processed/
+
+# Model checkpoints
+*.zip
+*.pth
+*.pt
+
+# Experiment outputs
+results/
+logs/
+
+# System files
+.DS_Store
