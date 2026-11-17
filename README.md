@@ -1,69 +1,67 @@
 # Deep Reinforcement Learning for Adaptive Multipath QUIC Video Streaming
 
-**Using Soft Actor-Critic (SAC) for Adaptive Traffic Scheduling over Heterogeneous Network Paths**
+**Using Soft Actor-Critic (SAC) for Adaptive Traffic Scheduling over Wi-Fi and LTE Networks**
 
----
+## 1. Project Overview
 
-## Project Overview
+This project explores the use of Deep Reinforcement Learning (DRL) to improve video streaming over Multipath QUIC (MPQUIC).
 
-This project investigates the application of Deep Reinforcement Learning (DRL) to adaptive multipath video streaming using Multipath QUIC (MPQUIC).
+The main objective is to develop a Soft Actor-Critic (SAC) agent that can adaptively distribute video traffic across heterogeneous network paths, particularly Wi-Fi and LTE/4G/5G connections.
 
-The main objective is to develop a **Soft Actor-Critic (SAC)** agent capable of making adaptive traffic-scheduling decisions across heterogeneous network paths, such as Wi-Fi and LTE/4G/5G.
+The agent will use network information obtained from MPQUIC, including bandwidth, round-trip time (RTT) and packet loss, to make traffic-scheduling decisions. Its performance will be evaluated based on video Quality of Experience (QoE), rebuffering time, throughput and packet reordering.
 
-By observing network conditions and MPQUIC telemetry, the proposed agent will learn scheduling policies that aim to improve video-streaming Quality of Experience (QoE), reduce rebuffering time, optimize throughput, and minimize packet reordering.
+The implementation will use Go-MPQUIC for multipath communication and Python for reinforcement learning.
 
-The research focuses on integrating reinforcement learning with real-time multipath network behavior.
+## 2. Research Objectives
 
-## Research Objectives
+The project aims to:
 
-The primary objectives are:
+1. Develop an SAC-based scheduler for adaptive MPQUIC traffic distribution.
+2. Use network telemetry as observations for the reinforcement learning agent.
+3. Design a continuous action space for multipath traffic scheduling.
+4. Evaluate the agent under changing Wi-Fi and LTE network conditions.
+5. Compare its performance against conventional scheduling methods.
+6. Investigate its effect on video-streaming QoE and network performance.
 
-1. Develop an adaptive multipath traffic-scheduling mechanism using SAC.
-2. Investigate the use of MPQUIC telemetry for reinforcement-learning observations.
-3. Design a continuous action space suitable for adaptive multipath scheduling.
-4. Evaluate performance under changing heterogeneous network conditions.
-5. Compare the proposed SAC scheduler against conventional multipath scheduling strategies.
-6. Analyze the impact of adaptive scheduling on video-streaming QoE.
+## 3. Proposed Methodology
 
-## Proposed Methodology
+The implementation is divided into four main components.
 
-The project follows a reinforcement-learning-based networking approach.
+### 3.1 MPQUIC Network Testbed
 
-### 1. Network Environment
+A Go-MPQUIC testbed will be established to support communication over multiple network paths.
 
-Establish an MPQUIC testbed with multiple network paths representing heterogeneous connections, such as Wi-Fi and LTE.
+Linux network emulation tools will be used to create separate Wi-Fi and LTE paths. Bandwidth, delay, jitter and packet loss will be varied to represent different network conditions.
 
-Network conditions will be varied using real-world bandwidth traces and controlled network emulation.
+Publicly available mobile-network traces will also be investigated for use in network-condition replay.
 
-### 2. Dataset Preparation
+### 3.2 Video Streaming Environment
 
-Publicly available mobile-network and bandwidth traces will be investigated and prepared for experimental use.
+A video server and streaming client will be configured to generate traffic over the MPQUIC connection.
 
-The preparation process will include:
+The streaming environment will provide the traffic and performance measurements needed to evaluate the scheduling strategies.
 
-- Dataset inspection and validation.
-- Handling missing or invalid measurements.
-- Timestamp and measurement normalization.
-- Trace visualization.
-- Conversion into a format suitable for network-condition replay.
+### 3.3 SAC Agent
 
-### 3. Reinforcement Learning Agent
+The reinforcement learning component will be developed in Python using PyTorch and Stable-Baselines3.
 
-The proposed agent will use **Soft Actor-Critic (SAC)**.
+The agent will interact with the network through three main elements:
 
-The agent will interact with the networking environment through:
+- **Observations:** Available network telemetry, including bandwidth, RTT, packet loss and other path statistics.
+- **Actions:** Continuous scheduling decisions that influence traffic distribution across the available paths.
+- **Rewards:** Feedback based on throughput, rebuffering, packet reordering and video-streaming QoE.
 
-- **Observations:** network telemetry, including bandwidth, RTT, packet loss, and other available path statistics.
-- **Actions:** continuous scheduling decisions that influence traffic distribution across available paths.
-- **Rewards:** feedback based on throughput, rebuffering, packet reordering, and streaming QoE.
+The exact interface between the Python agent and the Go-MPQUIC scheduler will be determined during implementation.
 
-The agent will learn through repeated interaction with the network environment.
+### 3.4 Experimental Evaluation
 
-### 4. Experimental Evaluation
+The SAC scheduler will be compared against conventional multipath scheduling approaches, including:
 
-The proposed scheduler will be evaluated against conventional multipath scheduling baselines.
+- MinRTT scheduling.
+- Round-Robin scheduling.
+- Rule-based multipath scheduling, where a suitable implementation is available.
 
-The evaluation will investigate:
+The evaluation will consider:
 
 - Video-streaming QoE.
 - Rebuffering time.
@@ -73,25 +71,29 @@ The evaluation will investigate:
 - Agent convergence and inference overhead.
 - Memory and computational overhead.
 
-Repeated experiments and statistical validation will be used to assess performance.
+Experiments will be repeated under different network conditions, with statistical measures used to assess the results.
 
-## Technology Stack
+## 4. Technology Stack
 
 | Component | Technology |
 |---|---|
-| Main programming language | Python |
+| Operating system | Ubuntu Linux |
+| Main programming language | Python 3.12+ |
 | Networking implementation | Go |
-| Reinforcement learning | Soft Actor-Critic (SAC) |
-| Deep learning framework | PyTorch |
+| Multipath protocol | Go-MPQUIC |
+| Reinforcement learning | Soft Actor-Critic |
+| Deep learning | PyTorch |
 | RL framework | Stable-Baselines3 |
-| Networking protocol | Multipath QUIC |
-| Networking testbed | Go-MPQUIC |
+| RL environment | Gymnasium |
 | Network emulation | Linux networking tools |
 | Data processing | NumPy, Pandas, SciPy |
 | Visualization | Matplotlib |
+| Video processing | FFmpeg |
 | Version control | Git and GitHub |
 
-## Proposed Architecture
+## 5. System Architecture
+
+The planned system consists of the following components:
 
 ```text
              NETWORK TRACE DATASETS
@@ -100,44 +102,44 @@ Repeated experiments and statistical validation will be used to assess performan
               DATA PREPROCESSING
                        |
                        v
-              NETWORK TESTBED
+                NETWORK TESTBED
                        |
                 +------+------+
                 |             |
                 v             v
-             Wi-Fi           LTE
+              Wi-Fi           LTE
                 |             |
                 +------+------+
                        |
                        v
-                 MPQUIC LAYER
+                  MPQUIC
                        |
                        v
-                NETWORK TELEMETRY
+               NETWORK TELEMETRY
                        |
                        v
-                PYTHON SAC AGENT
+                 PYTHON SAC AGENT
                        |
                        v
                 SCHEDULING ACTION
                        |
                        v
-                 MPQUIC SCHEDULER
+                MPQUIC SCHEDULER
                        |
                        v
                VIDEO STREAMING
                        |
                        v
-               PERFORMANCE REWARD
+              PERFORMANCE REWARD
                        |
-                       +----> SAC LEARNING
+                       +------> SAC LEARNING
 ```
 
-*Note: This is the proposed architecture. The exact integration interface between Go-MPQUIC and the Python SAC agent will be determined during implementation.*
+The architecture represents the intended design. The communication interface between the Go-MPQUIC implementation and the Python agent will be developed and tested as part of the implementation.
 
-## Project Structure
+## 6. Repository Structure
 
-The planned repository structure is:
+The project repository is organised as follows:
 
 ```text
 mpquic-sac-video-streaming/
@@ -164,64 +166,86 @@ mpquic-sac-video-streaming/
 └── README.md
 ```
 
-External networking dependencies and local virtual environments will be maintained separately from the main research repository.
+External networking dependencies and Python virtual environments are maintained separately from the main repository.
 
-## Installation and Development
+## 7. Installation and Development
 
 ### Prerequisites
 
-- Ubuntu Linux
-- Python 3.12+
-- Go 1.26+
-- Git
-- PyTorch
-- Stable-Baselines3
-- Linux networking utilities
+- Ubuntu Linux.
+- Python 3.12 or later.
+- Go.
+- Git.
+- PyTorch.
+- Stable-Baselines3.
+- Linux networking utilities.
 
 ### Clone the repository
 
 ```bash
 git clone https://github.com/Solomonskywalker/mpquic-sac-video-streaming.git
+
 cd mpquic-sac-video-streaming
 ```
 
-### Create a Python virtual environment
+### Create and activate the virtual environment
 
 ```bash
-python3 -m venv .venv
+python3.12 -m venv .venv
+
 source .venv/bin/activate
 ```
 
 ### Install Python dependencies
 
-Once the project dependency file is prepared:
+Once `requirements.txt` has been prepared:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### Networking dependency
+### Go-MPQUIC dependency
 
-The project currently investigates the Go-MPQUIC implementation:
+The project uses the Go-MPQUIC implementation:
 
 https://github.com/qoke/mp-quic-go
 
-It will be maintained as an external dependency rather than copied into this repository.
+The implementation will be maintained separately from the main research repository.
 
-## Collaboration
+## 8. Development Status
 
-We welcome collaboration among project team members.
+The project is currently in the environment setup and implementation stage.
 
-### Development workflow
+| Component | Status |
+|---|---|
+| Ubuntu development environment | Prepared |
+| Python virtual environment | Prepared |
+| Go environment | Installed |
+| GitHub repository | Created |
+| MPQUIC implementation | Under investigation |
+| MPQUIC client/server testing | Pending |
+| Wi-Fi and LTE network emulation | Pending |
+| Video streaming server | Pending |
+| Network trace preparation | Pending |
+| SAC environment | Pending |
+| SAC scheduler integration | Pending |
+| Model training | Pending |
+| Experimental evaluation | Pending |
 
-1. Clone the project repository.
-2. Create a separate branch for your task.
-3. Implement and test your changes.
-4. Commit your work with a descriptive commit message.
-5. Push your branch to GitHub.
-6. Open a Pull Request for review.
+## 9. Collaboration
 
-Example:
+Team members can contribute through separate Git branches.
+
+The development workflow is:
+
+1. Clone the repository.
+2. Create a branch for the assigned task.
+3. Implement and test the changes.
+4. Commit the changes with a descriptive message.
+5. Push the branch to GitHub.
+6. Submit a Pull Request for review.
+
+For example:
 
 ```bash
 git checkout -b feature/dataset-preprocessing
@@ -235,48 +259,24 @@ git commit -m "Add network trace preprocessing"
 git push -u origin feature/dataset-preprocessing
 ```
 
-Please avoid committing:
+The following should not be committed to the repository:
 
-- Virtual environments.
-- Personal access tokens or passwords.
-- Raw datasets and large binary files.
+- Python virtual environments.
+- Passwords, access tokens or other credentials.
+- Large raw datasets.
 - Unnecessary model checkpoints.
 - Temporary experiment files.
 
-## Current Development Status
+## 10. Research Direction
 
-This project is under active development.
+The main research question is whether a SAC-based traffic scheduler can improve multipath video streaming when network conditions change over time.
 
-| Component | Status |
-|---|---|
-| Python environment | Prepared |
-| PyTorch and Stable-Baselines3 | Installed |
-| Go environment | Installed |
-| GitHub repository | Created |
-| MPQUIC implementation investigation | In progress |
-| MPQUIC build and testing | Pending |
-| Dataset selection | Pending |
-| Dataset preprocessing | Pending |
-| Network emulation | Pending |
-| SAC environment development | Pending |
-| SAC scheduler integration | Pending |
-| Model training | Pending |
-| Experimental evaluation | Pending |
+The study will investigate how network telemetry can guide traffic distribution across heterogeneous paths and how these decisions affect streaming quality and network performance.
 
-## Research Direction
-
-The central research direction is to investigate whether a continuous-action SAC agent can learn effective adaptive traffic-scheduling policies using MPQUIC network telemetry under heterogeneous and dynamically changing network conditions.
-
-The implementation and experimental results will be used to assess the effectiveness of the proposed approach.
-
-## Team
-
-**Research project:** Deep Reinforcement Learning for Adaptive Multipath QUIC Video Streaming
-
-**Repository:** [mpquic-sac-video-streaming](https://github.com/Solomonskywalker/mpquic-sac-video-streaming)
-
-Team members and individual contributions will be documented as development progresses.
+All performance claims will be based on experimental results and comparisons with the selected baseline schedulers.
 
 ---
 
-**Note:** This repository is intended for academic research and experimentation. Research findings and performance claims will be added after experimental validation.
+**Repository:** https://github.com/Solomonskywalker/mpquic-sac-video-streaming
+
+**Project:** Deep Reinforcement Learning for Adaptive Multipath QUIC Video Streaming
